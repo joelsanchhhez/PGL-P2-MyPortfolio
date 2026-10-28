@@ -79,18 +79,24 @@ gráfica del emulador, manteniendo la misma escala de la interfaz.
 ![Portfolio - Sobre mí](docs/capturas/portfolio_sobre_mi.png)
 ![Portfolio - Mis proyectos](docs/capturas/portfolio_proyectos.png)
 
-## Publicación en GitHub
+## Entrega en GitHub
 
-La rama local `P2-Tarea1-Navegación` ya está creada. Crea un **repositorio vacío** en el perfil `joelsanchhhez` con el nombre
-`PGL-P2-MyPortfolio`. Después, desde el proyecto:
+Repositorio público: [PGL-P2-MyPortfolio](https://github.com/joelsanchhhez/PGL-P2-MyPortfolio).
+
+Rama de entrega y predeterminada: `P2-Tarea1-Navegación`.
+`main` conserva las fuentes originales del ZIP como punto de partida.
+Los cambios de la entrega se organizan por plataformas, fotografía, corrección
+del Drawer, pruebas y documentación. El historial se ha organizado a partir
+del ZIP original y la versión final comprobada, con las fechas reales del trabajo.
+
+Para descargar la entrega:
 
 ```bash
-git remote add origin https://github.com/joelsanchhhez/PGL-P2-MyPortfolio.git
-git push -u origin 'P2-Tarea1-Navegación'
+git clone --branch 'P2-Tarea1-Navegación' https://github.com/joelsanchhhez/PGL-P2-MyPortfolio.git
+cd PGL-P2-MyPortfolio
+flutter pub get
+flutter run
 ```
-
-**Entregable:** una vez creada y subida la rama, copia su enlace desde la web
-de GitHub. No se incluye un enlace a una rama inexistente.
 
 ## Recursos visuales
 
