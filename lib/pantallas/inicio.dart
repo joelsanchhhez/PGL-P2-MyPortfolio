@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../tema.dart';
-import '../widgets/cancha_fondo.dart';
 
 /// Bienvenida: mensaje sobre la cancha y enlace directo a instalaciones.
 class PantallaInicio extends StatelessWidget {
-  const PantallaInicio({super.key});
+  const PantallaInicio({super.key, required this.onVerInstalaciones});
+
+  // El AppRouter recibe la acción y decide qué pantalla mostrar.
+  final VoidCallback onVerInstalaciones;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        const Positioned.fill(child: CanchaFondo()),
+        Positioned.fill(
+          child: Image.asset('assets/images/cancha.png', fit: BoxFit.fill),
+        ),
         Positioned(
           left: 18,
           right: 18,
@@ -50,7 +53,7 @@ class PantallaInicio extends StatelessWidget {
           child: SafeArea(
             top: false,
             child: FilledButton.icon(
-              onPressed: () => context.go('/instalaciones'),
+              onPressed: onVerInstalaciones,
               icon: const Icon(Icons.sports_soccer),
               label: const Text('Ver instalaciones'),
             ),

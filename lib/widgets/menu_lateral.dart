@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../tema.dart';
 
-/// Menú lateral compartido. El elemento seleccionado refleja la URL actual.
+/// Menú compartido. Comunica al AppRouter el destino elegido.
 class MenuLateral extends StatelessWidget {
-  const MenuLateral({super.key, required this.rutaActual});
+  const MenuLateral({
+    super.key,
+    required this.rutaActual,
+    required this.onSeleccionar,
+  });
 
   final String rutaActual;
+  final void Function(String) onSeleccionar;
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +47,9 @@ class MenuLateral extends StatelessWidget {
       selected: activo,
       selectedTileColor: const Color(0x5C9AD9F5),
       onTap: () {
-        // Guardar la referencia antes de cerrar el Drawer evita usar
-        // un BuildContext que haya dejado de estar montado.
-        final router = GoRouter.of(context);
-        Navigator.of(context).pop();
-        if (!activo) router.go(ruta);
+        // Cerramos el menú antes de cambiar el cuerpo de la aplicación.
+        Navigator.pop(context);
+        onSeleccionar(ruta);
       },
     );
   }

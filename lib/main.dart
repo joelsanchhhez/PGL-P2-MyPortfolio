@@ -5,17 +5,17 @@ import 'tema.dart';
 
 void main() => runApp(const CanchaCanariaApp());
 
-/// La aplicación utiliza MaterialApp.router porque la navegación es declarativa.
+/// MaterialApp aplica el tema y AppRouter contiene la estructura común.
 class CanchaCanariaApp extends StatelessWidget {
   const CanchaCanariaApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return MaterialApp(
       title: 'Cancha Canaria',
       debugShowCheckedModeBanner: false,
       theme: TemaApp.claro,
-      routerConfig: AppRouter.router,
+      home: const AppRouter(),
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Paleta definida en la práctica 1 (página 8).
-abstract final class ColoresApp {
+class ColoresApp {
   static const primario = Color(0xFF14345D);
   static const secundario = Color(0xFF9AD9F5);
   static const fondo = Color(0xFFF4F7FA);
@@ -10,7 +10,7 @@ abstract final class ColoresApp {
 }
 
 /// Un único tema evita repetir colores en las pantallas.
-abstract final class TemaApp {
+class TemaApp {
   static ThemeData get claro {
     final esquema = ColorScheme.fromSeed(
       seedColor: ColoresApp.primario,
