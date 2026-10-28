@@ -26,18 +26,13 @@ preferencias persistentes.
 
 ## Preparación y ejecución
 
-> La carpeta es un paquete de **código fuente** de Flutter. Los directorios
-> nativos de Android/iOS/Web se generan en tu máquina porque aquí no se ha
-> dispuesto del SDK de Flutter para ejecutar `flutter create`.
-
-1. Instala Flutter y Android Studio (o prepara tu dispositivo/emulador).
-2. Descomprime esta carpeta y abre una terminal dentro de ella.
-3. Genera los directorios nativos, descarga las dependencias y ejecuta:
+El proyecto incluye las plataformas Android y web. Desde esta carpeta:
 
 ```bash
-flutter create --project-name pgl_p2_myportfolio --platforms=android,ios,web .
 flutter pub get
 flutter run
+# Alternativa para ejecutar en navegador:
+flutter run -d chrome
 ```
 
 > `PGL-P2-MyPortfolio` es el nombre del repositorio y la carpeta de entrega.
@@ -49,6 +44,8 @@ flutter run
 ```bash
 flutter analyze
 flutter test
+flutter build apk --debug
+flutter build web
 ```
 
 ## Estructura
@@ -73,32 +70,21 @@ lib/
 
 ## Capturas de pantalla
 
-**Pendiente de aportar capturas reales del emulador.** No se incluyen capturas
-inventadas ni imágenes del PDF presentadas como una app en ejecución.
-Después de ejecutar la app, guarda las capturas con estos nombres en
-`docs/capturas/` y descomenta las líneas Markdown siguientes:
+Capturas reales de esta versión ejecutada en el emulador Android Pixel 9.
+Se ha usado una resolución de 540 × 1212 y densidad 210 para reducir la carga
+gráfica del emulador, manteniendo la misma escala de la interfaz.
 
-<!--
 ![Pantalla de bienvenida](docs/capturas/inicio.png)
 ![Drawer de navegación](docs/capturas/drawer.png)
 ![Portfolio - Sobre mí](docs/capturas/portfolio_sobre_mi.png)
 ![Portfolio - Mis proyectos](docs/capturas/portfolio_proyectos.png)
--->
-
-En un emulador Android puedes hacer una captura con el botón de cámara del
-emulador; también puedes usar `adb exec-out screencap -p > docs/capturas/inicio.png`
-(repite con el nombre correspondiente después de abrir cada pantalla).
 
 ## Publicación en GitHub
 
-Crea un **repositorio vacío** en el perfil `joelsanchhhez` con el nombre
+La rama local `P2-Tarea1-Navegación` ya está creada. Crea un **repositorio vacío** en el perfil `joelsanchhhez` con el nombre
 `PGL-P2-MyPortfolio`. Después, desde el proyecto:
 
 ```bash
-git init
-git checkout -b 'P2-Tarea1-Navegación'
-git add .
-git commit -m "P2 tarea 1: navegación con Drawer y portfolio"
 git remote add origin https://github.com/joelsanchhhez/PGL-P2-MyPortfolio.git
 git push -u origin 'P2-Tarea1-Navegación'
 ```
@@ -106,15 +92,39 @@ git push -u origin 'P2-Tarea1-Navegación'
 **Entregable:** una vez creada y subida la rama, copia su enlace desde la web
 de GitHub. No se incluye un enlace a una rama inexistente.
 
-## Recursos pendientes del portfolio anterior
+## Recursos visuales
 
-La práctica 1 hacía referencia a `LaVidaDeJoel.zip`, que no se ha adjuntado con
-esta entrega. Se ha empleado un avatar Material de sustitución en lugar de la
-foto personal. El resto de la presentación y las actividades se basan en el
-PDF aportado. Para conseguir una coincidencia exacta, añade la foto de ese
-portfolio anterior (consulta `assets/images/README.md`).
+La fotografía de Joel se ha convertido de HEIC a JPEG y se incluye en
+`assets/images/joel.jpg`. `Presentacion` la muestra con `CircleAvatar` en ambas
+pestañas. La cancha conserva la ilustración vectorial del código inicial.
 
 ## Referencia del diseño
 
 `Cancha_Canaria_Diseno_Joel.pdf` — páginas 2 (bienvenida), 3 (portfolio),
 7 (organización), 8 (colores) y 9 (iconos), según la numeración impresa.
+
+## Revisión del código inicial
+
+El ZIP ya contenía las rutas con `go_router`, el menú, las pestañas, las tarjetas,
+la ilustración y el QR. Se conservan estos widgets y su organización sencilla.
+Se han generado Android y web, establecido el nombre visible de la aplicación y
+corregido la cabecera del Drawer: ahora tiene altura mínima y crece si el texto
+necesita más espacio, en vez de desbordarse con una altura fija.
+
+La prueba de widgets comprueba el botón de bienvenida, las cuatro rutas,
+el cierre del Drawer, pulsar la opción activa y el cambio entre ambas pestañas.
+Las capturas documentan la aplicación ejecutada; no proceden del PDF.
+
+El fondo conserva el dibujo con `CustomPainter` del código inicial.
+
+## Validación de la entrega
+
+- `flutter analyze`: sin problemas detectados.
+- `flutter test`: prueba de navegación completa superada.
+- `flutter build apk --debug`: APK Android compilado.
+- `flutter build web`: compilación web comprobada.
+- Revisión manual y capturas en el emulador Pixel 9.
+
+Para instalar el APK tras compilar, usa `flutter install --debug` con el
+emulador encendido. El archivo generado está en
+`build/app/outputs/flutter-apk/app-debug.apk`.
