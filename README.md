@@ -128,11 +128,10 @@ Resolución del emulador: 540 × 1212, densidad 210.
 
 [Rama P2-Tarea1-Navegación](https://github.com/joelsanchhhez/PGL-P2-MyPortfolio/tree/P2-Tarea1-Navegaci%C3%B3n)
 
-La rama de esta tarea conserva el nombre solicitado para entregar.
-Las actualizaciones usan mensajes con prefijos Karma (`refactor:`, `docs:`, etc.).
-Para cerrar la tarea se integra su rama en `develop` y después `develop` en `main`,
-siguiendo el orden indicado en los apuntes. Los commits anteriores se conservan
-como historial del trabajo inicial.
+La rama de entrega y predeterminada es `P2-Tarea1-Navegación`.
+`main` conserva las fuentes originales del ZIP como punto de partida.
+Las mejoras se suben directamente a la rama de entrega con commits separados;
+no se utiliza una rama `develop` ni un flujo de fusiones para esta entrega.
 
 ```bash
 git clone --branch 'P2-Tarea1-Navegación' https://github.com/joelsanchhhez/PGL-P2-MyPortfolio.git
