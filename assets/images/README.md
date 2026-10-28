@@ -1,6 +1,7 @@
 # Recursos visuales
 
-`joel.jpg`: fotografía aportada por Joel, convertida de HEIC a JPEG.
-Declarada en pubspec.yaml y utilizada en Presentacion.
+- `joel.jpg`: fotografía aportada por Joel, convertida de HEIC a JPEG.
+- `cancha.png`: exportación del dibujo incluido en el código inicial.
 
-La cancha se dibuja con CustomPainter en cancha_fondo.dart.
+Ambas imágenes se declaran en pubspec.yaml y se muestran con widgets de imagen.
+La aplicación no necesita CustomPainter para mostrar la cancha.

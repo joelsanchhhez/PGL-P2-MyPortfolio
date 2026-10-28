@@ -1,95 +1,138 @@
 # Cancha Canaria — PGL-P2-MyPortfolio
 
-**UD2 / Práctica 2 · Tarea 1: Navegación**  
-Alumno: Joel Sánchez Siliuto · 2.º DAM · Salesianos La Cuesta
+**UD2 / Práctica 2 · Tarea 1: Navegación**
 
-## Descripción
+Joel Sánchez Siliuto · 2.º DAM · Salesianos La Cuesta
 
-Aplicación Flutter de instalaciones deportivas de Canarias. Esta primera tarea
-de implementación reproduce el diseño de la práctica 1 e incorpora la
-**bienvenida**, la navegación lateral con **Drawer + go_router** y el
-**portfolio de Joel** con pestañas. Las secciones Instalaciones y Ajustes se
-muestran como futuras ampliaciones; no se ha implementado aún el CRUD ni las
-preferencias persistentes.
+## Qué hace la aplicación
 
-## Implementado
+Cancha Canaria muestra una bienvenida y permite acceder desde un Drawer al
+portfolio de Joel, a Instalaciones y a Ajustes. El portfolio tiene las pestañas
+Sobre mí y Mis proyectos, con fotografía, actividades y QR del perfil de GitHub.
+Instalaciones y Ajustes son pantallas informativas: el CRUD y las preferencias
+se desarrollarán en tareas posteriores.
 
-- **Inicio** (`/`): ilustración de cancha, presentación y botón «Ver instalaciones».
-- **Drawer**: cabecera azul, menú Inicio / Portfolio / Instalaciones / Ajustes,
-  con opción activa destacada.
-- **Portfolio** (`/portfolio`): `DefaultTabController` + `TabBar` + `TabBarView`;
-  datos biográficos, tarjetas de actividades y QR de GitHub.
-- **go_router**: rutas declaradas en `app_router.dart` con `ShellRoute` para
-  conservar el mismo `Scaffold`, `AppBar` y `Drawer` en todas las pantallas.
-- **Tema**: primario `#14345D`, secundario `#9AD9F5`, fondo `#F4F7FA`, texto
-  `#172B42`.
+## Navegación siguiendo los apuntes
 
-## Preparación y ejecución
+Se utiliza `Navigator` con rutas nombradas, siguiendo el ejemplo de las páginas
+6 y 7 de los apuntes UD2.1. `AppRouter` contiene un `Scaffold` con un `AppBar`
+y un `Drawer` comunes. Dentro del cuerpo hay un `Navigator` cuya
+`GlobalKey<NavigatorState>` permite cambiar la pantalla desde el menú.
 
-El proyecto incluye las plataformas Android y web. Desde esta carpeta:
+1. El usuario pulsa una opción del Drawer.
+2. `Navigator.pop(context)` cierra el menú.
+3. Un callback comunica la ruta a `AppRouter`.
+4. `setState` actualiza el título y la selección del menú.
+5. `pushReplacementNamed` sustituye la pantalla del cuerpo sin acumular destinos.
+
+`onGenerateRoute` utiliza un `switch` clásico con `case` para devolver la pantalla
+correspondiente mediante `MaterialPageRoute`.
+
+| Ruta | Pantalla |
+| --- | --- |
+| `/` | Bienvenida |
+| `/portfolio` | Portfolio con dos pestañas |
+| `/instalaciones` | Aviso de próxima tarea |
+| `/ajustes` | Aviso de próxima tarea |
+
+El ZIP inicial utilizaba `go_router`. Esta versión lo sustituye por el ejemplo
+de rutas nombradas de clase. Ya no utiliza `ShellRoute`, `CustomPainter` ni
+clases `abstract final`.
+
+## Portfolio y diseño
+
+Las pestañas usan `DefaultTabController`, `TabBar` y `TabBarView`. Son widgets
+estándar para implementar las dos secciones del diseño, aunque su implementación
+no se desarrolla en los apuntes aportados. Las tarjetas, la presentación y los
+proyectos se separan en widgets pequeños y comentados.
+
+Se conservan los colores: primario `#14345D`, secundario `#9AD9F5`, fondo
+`#F4F7FA` y texto `#172B42`. La fotografía está en `assets/images/joel.jpg`.
+La cancha del código inicial se ha exportado como `assets/images/cancha.png`:
+la bienvenida utiliza `Image.asset`, sin código para dibujar con un lienzo.
+
+`qr_flutter` y `url_launcher` conservan el QR y el enlace del portfolio inicial.
+
+## Ejecutar y compilar
 
 ```bash
 flutter pub get
 flutter run
-# Alternativa para ejecutar en navegador:
+```
+
+Para ejecutar en navegador:
+
+```bash
 flutter run -d chrome
 ```
 
-> `PGL-P2-MyPortfolio` es el nombre del repositorio y la carpeta de entrega.
-> `pgl_p2_myportfolio` es el identificador válido del paquete Dart: no puede
-> llevar guiones ni mayúsculas.
-
-### Comprobaciones
+Para analizar y compilar:
 
 ```bash
 flutter analyze
-flutter test
 flutter build apk --debug
 flutter build web
 ```
+
+El APK se genera en `build/app/outputs/flutter-apk/app-debug.apk`.
+El identificador Dart es `pgl_p2_myportfolio`, porque el nombre del paquete
+no admite mayúsculas ni guiones.
 
 ## Estructura
 
 ```text
 lib/
-  main.dart                    # MaterialApp.router
-  tema.dart                    # Paleta de la práctica 1
-  app_router.dart              # ShellRoute y destinos
+  main.dart                  # MaterialApp, tema y AppRouter
+  app_router.dart            # Scaffold común y Navigator con rutas nombradas
+  tema.dart                  # Colores y tema
   pantallas/
-    inicio.dart                # Bienvenida
-    portfolio.dart             # Pestañas
-    instalaciones.dart         # Próxima tarea (marcador)
-    ajustes.dart               # Próxima tarea (marcador)
+    inicio.dart              # Imagen y bienvenida
+    portfolio.dart           # Sobre mí y Mis proyectos
+    instalaciones.dart       # Reservada para otra tarea
+    ajustes.dart             # Reservada para otra tarea
   widgets/
-    menu_lateral.dart          # Drawer reutilizable
-    cancha_fondo.dart          # Ilustración de cancha
-    presentacion.dart          # Presentación de Joel
-    actividades.dart           # Tarjetas de actividades
-    proyectos.dart             # QR y enlace al GitHub
+    menu_lateral.dart        # Opciones del Drawer y callback
+    presentacion.dart        # Fotografía y presentación
+    actividades.dart         # Tarjetas de actividades
+    proyectos.dart           # QR y enlace a GitHub
+assets/images/
+  joel.jpg
+  cancha.png
 ```
 
-## Capturas de pantalla
+## Comprobación manual
 
-Capturas reales de esta versión ejecutada en el emulador Android Pixel 9.
-Se ha usado una resolución de 540 × 1212 y densidad 210 para reducir la carga
-gráfica del emulador, manteniendo la misma escala de la interfaz.
+- Abrir el Drawer y comprobar las cuatro opciones y la selección activa.
+- Entrar en cada destino y comprobar el título y el cierre del menú.
+- Pulsar otra vez el destino activo y comprobar que el Drawer se cierra.
+- Volver a Inicio y pulsar Ver instalaciones.
+- Abrir el portfolio y alternar Sobre mí y Mis proyectos, también deslizando.
+- Comprobar la fotografía, las actividades, el QR y el enlace de GitHub.
 
-![Pantalla de bienvenida](docs/capturas/inicio.png)
-![Drawer de navegación](docs/capturas/drawer.png)
-![Portfolio - Sobre mí](docs/capturas/portfolio_sobre_mi.png)
-![Portfolio - Mis proyectos](docs/capturas/portfolio_proyectos.png)
+La navegación simplificada también se ha comprobado con una prueba de widgets
+utilizada durante la revisión. Ese código auxiliar no forma parte de la entrega.
 
-## Entrega en GitHub
+## Capturas reales
 
-Repositorio público: [PGL-P2-MyPortfolio](https://github.com/joelsanchhhez/PGL-P2-MyPortfolio).
+Capturas de la versión simplificada ejecutada en Android Pixel 9.
+Resolución del emulador: 540 × 1212, densidad 210.
 
-Rama de entrega y predeterminada: `P2-Tarea1-Navegación`.
-`main` conserva las fuentes originales del ZIP como punto de partida.
-Los cambios de la entrega se organizan por plataformas, fotografía, corrección
-del Drawer, pruebas y documentación. El historial se ha organizado a partir
-del ZIP original y la versión final comprobada, con las fechas reales del trabajo.
+![Bienvenida](docs/capturas/inicio.png)
+![Drawer](docs/capturas/drawer.png)
+![Sobre mí](docs/capturas/portfolio_sobre_mi.png)
+![Mis proyectos](docs/capturas/portfolio_proyectos.png)
 
-Para descargar la entrega:
+## Repositorio y entrega
+
+[Repositorio público](https://github.com/joelsanchhhez/PGL-P2-MyPortfolio)
+
+[Rama P2-Tarea1-Navegación](https://github.com/joelsanchhhez/PGL-P2-MyPortfolio/tree/P2-Tarea1-Navegaci%C3%B3n)
+
+La rama de esta tarea conserva el nombre solicitado para entregar.
+Las actualizaciones usan mensajes con prefijos Karma (`refactor:`, `docs:`, etc.).
+Para cerrar la tarea se integra su rama en `develop` y después `develop` en `main`,
+siguiendo el orden indicado en los apuntes. Los commits anteriores se conservan
+como historial del trabajo inicial.
 
 ```bash
 git clone --branch 'P2-Tarea1-Navegación' https://github.com/joelsanchhhez/PGL-P2-MyPortfolio.git
@@ -97,40 +140,3 @@ cd PGL-P2-MyPortfolio
 flutter pub get
 flutter run
 ```
-
-## Recursos visuales
-
-La fotografía de Joel se ha convertido de HEIC a JPEG y se incluye en
-`assets/images/joel.jpg`. `Presentacion` la muestra con `CircleAvatar` en ambas
-pestañas. La cancha conserva la ilustración vectorial del código inicial.
-
-## Referencia del diseño
-
-`Cancha_Canaria_Diseno_Joel.pdf` — páginas 2 (bienvenida), 3 (portfolio),
-7 (organización), 8 (colores) y 9 (iconos), según la numeración impresa.
-
-## Revisión del código inicial
-
-El ZIP ya contenía las rutas con `go_router`, el menú, las pestañas, las tarjetas,
-la ilustración y el QR. Se conservan estos widgets y su organización sencilla.
-Se han generado Android y web, establecido el nombre visible de la aplicación y
-corregido la cabecera del Drawer: ahora tiene altura mínima y crece si el texto
-necesita más espacio, en vez de desbordarse con una altura fija.
-
-La prueba de widgets comprueba el botón de bienvenida, las cuatro rutas,
-el cierre del Drawer, pulsar la opción activa y el cambio entre ambas pestañas.
-Las capturas documentan la aplicación ejecutada; no proceden del PDF.
-
-El fondo conserva el dibujo con `CustomPainter` del código inicial.
-
-## Validación de la entrega
-
-- `flutter analyze`: sin problemas detectados.
-- `flutter test`: prueba de navegación completa superada.
-- `flutter build apk --debug`: APK Android compilado.
-- `flutter build web`: compilación web comprobada.
-- Revisión manual y capturas en el emulador Pixel 9.
-
-Para instalar el APK tras compilar, usa `flutter install --debug` con el
-emulador encendido. El archivo generado está en
-`build/app/outputs/flutter-apk/app-debug.apk`.
