@@ -21,6 +21,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  # Cuando tengas la foto original, descomenta y añade el fichero:
-  # assets:
-  #   - assets/images/joel.jpg
+  assets:
+    - assets/images/joel.jpg

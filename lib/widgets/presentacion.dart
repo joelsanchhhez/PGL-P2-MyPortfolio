@@ -17,7 +17,7 @@ class Presentacion extends StatelessWidget {
           CircleAvatar(
             radius: 39,
             backgroundColor: ColoresApp.primario,
-            child: Icon(Icons.person, color: Colors.white, size: 46),
+            backgroundImage: AssetImage('assets/images/joel.jpg'),
           ),
           SizedBox(width: 16),
           Expanded(
