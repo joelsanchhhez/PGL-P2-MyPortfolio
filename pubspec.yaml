@@ -1,0 +1,26 @@
+name: pgl_p2_myportfolio
+description: "Cancha Canaria - P2 Tarea 1: Navegación con Drawer y go_router"
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Se deja un rango que permite resolver versiones según el SDK instalado.
+  go_router: '>=14.0.0 <19.0.0'
+  qr_flutter: ^4.1.0
+  url_launcher: '>=6.3.0 <7.0.0'
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  # Cuando tengas la foto original, descomenta y añade el fichero:
+  # assets:
+  #   - assets/images/joel.jpg
