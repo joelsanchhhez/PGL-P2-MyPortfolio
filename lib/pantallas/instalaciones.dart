@@ -14,9 +14,12 @@ class PantallaInstalaciones extends StatelessWidget {
           children: [
             Icon(Icons.sports_soccer, size: 54),
             SizedBox(height: 14),
-            Text('Instalaciones', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            Text('Instalaciones',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            Text('La gestión de instalaciones se añadirá en la siguiente tarea.', textAlign: TextAlign.center),
+            Text(
+                'La gestión de instalaciones se añadirá en la siguiente tarea.',
+                textAlign: TextAlign.center),
           ],
         ),
       ),

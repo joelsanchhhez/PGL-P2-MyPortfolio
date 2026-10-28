@@ -30,22 +30,33 @@ class _PintorCancha extends CustomPainter {
 
     canvas.drawPath(
       poligono(const [
-        Offset(0, .37), Offset(.17, .22), Offset(.31, .32),
-        Offset(.52, .14), Offset(.83, .40), Offset(1, .27),
-        Offset(1, .63), Offset(0, .63),
+        Offset(0, .37),
+        Offset(.17, .22),
+        Offset(.31, .32),
+        Offset(.52, .14),
+        Offset(.83, .40),
+        Offset(1, .27),
+        Offset(1, .63),
+        Offset(0, .63),
       ]),
       Paint()..color = const Color(0xFF516780),
     );
 
     canvas.drawPath(
       poligono(const [
-        Offset(0, .53), Offset(1, .43), Offset(1, 1), Offset(0, 1),
+        Offset(0, .53),
+        Offset(1, .43),
+        Offset(1, 1),
+        Offset(0, 1),
       ]),
       Paint()..color = const Color(0xFFC3A980),
     );
 
     final pista = poligono(const [
-      Offset(.09, .60), Offset(.89, .55), Offset(.985, .95), Offset(.015, .99),
+      Offset(.09, .60),
+      Offset(.89, .55),
+      Offset(.985, .95),
+      Offset(.015, .99),
     ]);
     canvas.drawPath(pista, Paint()..color = const Color(0xFF206B61));
     canvas.drawPath(

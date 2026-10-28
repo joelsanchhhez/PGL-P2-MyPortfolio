@@ -37,7 +37,8 @@ class PantallaInicio extends StatelessWidget {
                 ),
                 SizedBox(height: 14),
                 Text('¡Bienvenido, Joel!',
-                    style: TextStyle(fontSize: 16, color: ColoresApp.secundario)),
+                    style:
+                        TextStyle(fontSize: 16, color: ColoresApp.secundario)),
               ],
             ),
           ),

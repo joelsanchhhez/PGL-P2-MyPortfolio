@@ -56,7 +56,8 @@ class TarjetaActividad extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: ListTile(
           leading: Icon(icono, color: ColoresApp.primario, size: 28),
-          title: Text(titulo, style: const TextStyle(fontWeight: FontWeight.bold)),
+          title:
+              Text(titulo, style: const TextStyle(fontWeight: FontWeight.bold)),
           subtitle: Text(descripcion),
         ),
       ),

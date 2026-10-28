@@ -14,9 +14,11 @@ class PantallaAjustes extends StatelessWidget {
           children: [
             Icon(Icons.settings, size: 54),
             SizedBox(height: 14),
-            Text('Ajustes', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            Text('Ajustes',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            Text('Las preferencias se implementarán en una tarea posterior.', textAlign: TextAlign.center),
+            Text('Las preferencias se implementarán en una tarea posterior.',
+                textAlign: TextAlign.center),
           ],
         ),
       ),

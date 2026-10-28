@@ -19,17 +19,20 @@ class MenuLateral extends StatelessWidget {
           const _CabeceraMenu(),
           _entrada(context, Icons.home, 'Inicio', '/'),
           _entrada(context, Icons.person, 'Portfolio de Joel', '/portfolio'),
-          _entrada(context, Icons.sports_soccer, 'Instalaciones', '/instalaciones'),
+          _entrada(
+              context, Icons.sports_soccer, 'Instalaciones', '/instalaciones'),
           _entrada(context, Icons.settings, 'Ajustes', '/ajustes'),
         ],
       ),
     );
   }
 
-  Widget _entrada(BuildContext context, IconData icono, String titulo, String ruta) {
+  Widget _entrada(
+      BuildContext context, IconData icono, String titulo, String ruta) {
     final activo = rutaActual == ruta;
     return ListTile(
-      leading: Icon(icono, color: activo ? ColoresApp.primario : ColoresApp.texto),
+      leading:
+          Icon(icono, color: activo ? ColoresApp.primario : ColoresApp.texto),
       title: Text(
         titulo,
         style: TextStyle(
@@ -56,20 +59,23 @@ class _CabeceraMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 164,
+      constraints: const BoxConstraints(minHeight: 164),
       padding: const EdgeInsets.fromLTRB(16, 48, 16, 18),
       decoration: const BoxDecoration(color: ColoresApp.primario),
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Icon(Icons.sports_soccer, color: Colors.white, size: 32),
           SizedBox(height: 10),
           Text(
             'Cancha Canaria',
-            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
+            style: TextStyle(
+                color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
           ),
-          Text('Deporte en las islas', style: TextStyle(color: ColoresApp.secundario)),
+          Text('Deporte en las islas',
+              style: TextStyle(color: ColoresApp.secundario)),
         ],
       ),
     );

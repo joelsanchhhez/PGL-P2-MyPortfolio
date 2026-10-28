@@ -11,10 +11,12 @@ class Proyectos extends StatelessWidget {
   static final Uri github = Uri.parse('https://github.com/joelsanchhhez');
 
   Future<void> _abrirGitHub(BuildContext context) async {
-    final abierto = await launchUrl(github, mode: LaunchMode.externalApplication);
+    final abierto =
+        await launchUrl(github, mode: LaunchMode.externalApplication);
     if (!abierto && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se ha podido abrir el perfil de GitHub.')),
+        const SnackBar(
+            content: Text('No se ha podido abrir el perfil de GitHub.')),
       );
     }
   }
@@ -34,7 +36,8 @@ class Proyectos extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 26),
-        const Text('Mi GitHub', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text('Mi GitHub',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 14),
         Container(
           color: Colors.white,
@@ -56,7 +59,8 @@ class Proyectos extends StatelessWidget {
           onPressed: () => _abrirGitHub(context),
           child: const Text(
             'github.com/joelsanchhhez',
-            style: TextStyle(color: ColoresApp.primario, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: ColoresApp.primario, fontWeight: FontWeight.bold),
           ),
         ),
       ],
