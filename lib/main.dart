@@ -11,11 +11,11 @@ class CanchaCanariaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Cancha Canaria',
       debugShowCheckedModeBanner: false,
       theme: TemaApp.claro,
-      home: const AppRouter(),
+      routerConfig: AppRouter.router,
     );
   }
 }
