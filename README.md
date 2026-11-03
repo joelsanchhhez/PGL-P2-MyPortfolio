@@ -38,8 +38,8 @@ la última entrega había cambiado a `Navigator` con rutas nombradas.
 
 Los dos registros iniciales son ejemplos. Los datos se conservan al cambiar
 entre destinos durante la sesión y se reinician al cerrar la aplicación;
-no se utiliza base de datos. El botón opcional «Borrar todos» queda sin
-implementar para que Joel pueda intentarlo por su cuenta.
+no se utiliza base de datos. «Borrar todos» permite vaciar la lista con un
+diálogo de confirmación; se desactiva cuando no hay instalaciones.
 
 La integración parte del commit `2b7bd42` del repositorio actual y añade solo
 el modelo, el formulario, las tarjetas y las imágenes de categorías del ZIP.

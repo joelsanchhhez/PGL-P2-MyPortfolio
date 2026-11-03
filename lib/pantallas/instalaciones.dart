@@ -108,6 +108,39 @@ class _PantallaInstalacionesState extends State<PantallaInstalaciones> {
         content: Text('Instalación eliminada')));
   }
 
+  Future<void> _confirmarBorrarTodos() async {
+    if (_instalaciones.isEmpty) return;
+    final confirmado = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('¿Borrar todas las instalaciones?'),
+        content: Text(
+          'Se eliminarán las ${_instalaciones.length} instalaciones. '
+          'Esta acción no se puede deshacer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Borrar todos',
+                style: TextStyle(color: ColoresApp.error)),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || confirmado != true) return;
+    setState(() => _instalaciones.clear());
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.fromLTRB(16, 0, 16, 80),
+      content: Text('Todas las instalaciones se han eliminado'),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -133,7 +166,17 @@ class _PantallaInstalacionesState extends State<PantallaInstalaciones> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed:
+                    _instalaciones.isEmpty ? null : _confirmarBorrarTodos,
+                style: TextButton.styleFrom(foregroundColor: ColoresApp.error),
+                icon: const Icon(Icons.delete_sweep),
+                label: const Text('Borrar todos'),
+              ),
+            ),
+            const SizedBox(height: 8),
             Expanded(
               child: _instalaciones.isEmpty
                   ? const Center(

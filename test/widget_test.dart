@@ -113,16 +113,30 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Campo actualizado'), findsNothing);
     expect(find.text('Total: 2'), findsOneWidget);
-    for (final nombre in ['Cancha del barrio', 'Pabellón del norte']) {
-      await tester.tap(find.byTooltip('Eliminar $nombre'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Eliminar'));
-      await tester.pumpAndSettle();
-      await tester.pump(const Duration(seconds: 5));
-      await tester.pumpAndSettle();
-    }
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Borrar todos'));
+    await tester.pumpAndSettle();
+    expect(find.text('¿Borrar todas las instalaciones?'), findsOneWidget);
+    await tester.tap(find.text('Cancelar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Total: 2'), findsOneWidget);
+    expect(find.text('Cancha del barrio'), findsOneWidget);
+    expect(find.text('Pabellón del norte'), findsOneWidget);
+    await tester.tap(find.text('Borrar todos'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.widgetWithText(TextButton, 'Borrar todos')));
+    await tester.pumpAndSettle();
     expect(find.text('Total: 0'), findsOneWidget);
     expect(find.text('Aún no hay instalaciones'), findsOneWidget);
+    expect(
+        tester
+            .widget<TextButton>(find.widgetWithText(TextButton, 'Borrar todos'))
+            .onPressed,
+        isNull);
+
     await tester.tap(find.text('Añadir instalación'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancelar'));
