@@ -145,8 +145,10 @@ entrega anterior, cuyo código y recursos no cambian.
 
 [Repositorio público](https://github.com/joelsanchhhez/PGL-P2-MyPortfolio)
 
-Rama local de trabajo: `P2-Tarea3-Formulario`. Parte de la rama existente
-`P2-Tarea1-Navegación`. No se ha publicado esta rama en GitHub.
+[Rama de entrega P2-Tarea3-Formulario](https://github.com/joelsanchhhez/PGL-P2-MyPortfolio/tree/P2-Tarea3-Formulario)
+
+La rama parte de `P2-Tarea1-Navegación` e incluye el formulario, el CRUD,
+el borrado de todas las instalaciones y las capturas reales enlazadas arriba.
 
 ```bash
 git switch P2-Tarea3-Formulario
