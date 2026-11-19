@@ -2,101 +2,72 @@
 
 Joel Sánchez Siliuto · 2.º DAM · Programación Multimedia y Dispositivos Móviles.
 
-Aplicación Flutter de instalaciones deportivas de Canarias. Esta tarea añade
-registro, inicio de sesión y gestión de un JWT sobre la Tarea 3, conservando
-la bienvenida, el portfolio, el Drawer, las rutas con `go_router` y el CRUD de
-instalaciones, incluido «Borrar todos».
-
 **[Rama de entrega: P2-Tarea5-SesionUsuario](https://github.com/joelsanchhhez/PGL-P2-MyPortfolio/tree/P2-Tarea5-SesionUsuario)**
 
-## Registro e inicio de sesión
+La tarea añade registro e inicio de sesión a Cancha Canaria, manteniendo el diseño,
+el portfolio, la navegación y el CRUD de Instalaciones de las tareas anteriores.
+La implementación usa los conceptos de los apuntes: formularios con `Form` y
+`TextEditingController`, callbacks, `StatefulWidget`, `setState`, `async/await`,
+servicios HTTP, JSON, `factory fromJson`, un Singleton y excepciones propias.
 
-- Registro con nombre completo, email y contraseña.
-- Validación de nombre (3 a 100 caracteres), formato de email y contraseña de
-  registro (8 a 64 caracteres, mayúscula, minúscula, número y símbolo).
-- En login se valida email y contraseña no vacía, sin imponer reglas nuevas
-  que pudieran impedir acceder a cuentas anteriores.
-- Contraseña oculta, con un botón accesible para mostrarla.
-- Toda respuesta de registro o login se muestra en un `AlertDialog`, tanto
-  si la API acepta la petición como si devuelve un error.
-- Un registro correcto vuelve a login al aceptar la alerta.
-- Un login correcto guarda primero el JWT y muestra la respuesta; al aceptar
-  la alerta se abre Bienvenida.
-- Los botones se bloquean mientras hay una petición para evitar envíos dobles.
-- Los errores de conexión, timeout o respuestas no válidas también se explican
-  en alertas, sin mostrar HTML del servidor ni datos técnicos sensibles.
+## Funcionalidad de la práctica
 
-## Sesión y navegación protegida
+- **Registro:** nombre completo, email y contraseña. Se validan los campos,
+  se envían a la API y se muestra su respuesta en una alerta. Si el registro
+  es correcto, al aceptar la alerta se vuelve al login.
+- **Login:** email, contraseña, botón para registrarse y botón para enviar
+  la petición. Tanto el éxito como los errores se muestran mediante alertas.
+- **Token seguro:** tras un login correcto se guarda el JWT con
+  `flutter_secure_storage`. Nunca se almacena la contraseña.
+- **Inicio de la app:** solo aparece el login, sin Drawer. Se lee el token
+  guardado y se comprueba en la API; si es válido, se abre Bienvenida.
+- **Cerrar sesión:** el botón del Drawer elimina el JWT del dispositivo y
+  vuelve al login. Las rutas privadas quedan bloqueadas sin sesión.
+- **Bienvenida:** el botón «Mensaje de bienvenida» consulta el endpoint
+  protegido y muestra el mensaje recibido de la API en una alerta.
 
-Al arrancar solo se construye el login, fuera del `ShellRoute`: no aparece
-el Drawer ni se puede acceder al portfolio o a Instalaciones.
+El email debe tener un formato válido. En registro se exige nombre de 3 a 100
+caracteres y contraseña de 8 a 64 caracteres con mayúscula, minúscula, número
+y símbolo. En login se exige una contraseña no vacía para admitir cuentas previas.
 
-1. Se busca el token con `flutter_secure_storage`.
-2. Si no existe, se permanece en login.
-3. Si existe, se consulta `GET /users/check-token`.
-4. Si la API lo acepta, se abre automáticamente Bienvenida.
-5. Si lo rechaza (401/403), se elimina del dispositivo y se permanece en login.
-6. Si hay un problema de red o del servidor, no se permite entrar y se conserva
-   el token guardado para poder usar «Reintentar sesión guardada».
+## Servicios y almacenamiento
 
-El guard de `go_router` protege también los accesos por ruta y el regreso a
-pantallas privadas después de cerrar sesión.
+`ApiSesion` contiene todas las peticiones HTTP, la conversión de JSON y los
+controles de respuesta. Las pantallas solo validan el formulario, llaman al
+servicio, actualizan su estado y muestran la alerta correspondiente.
 
-El Drawer contiene **Cerrar sesión**: elimina el JWT del almacenamiento seguro,
-limpia la sesión en memoria y vuelve a login. Si el borrado falla, muestra una
-alerta para poder reintentarlo.
+`ServicioSesion` es un Singleton sencillo, como el ejemplo de los apuntes.
+Comparte el JWT en memoria y utiliza `flutter_secure_storage` para leerlo,
+guardarlo y borrarlo de forma segura. En Android las claves están protegidas
+por Android Keystore. Se desactiva la copia de seguridad automática para evitar
+restaurar el token cifrado sin sus claves.
 
-Bienvenida incluye **Mensaje de bienvenida**, que consulta el endpoint protegido
-`GET /users/welcome` y muestra su `message` en una alerta. Si la API rechaza el
-token o ya no encuentra al usuario, se cierra la sesión tras aceptar el aviso.
-
-## Almacenamiento seguro
-
-Se guarda únicamente el JWT con `flutter_secure_storage`; nunca la contraseña.
-En Android, el plugin cifra los datos y protege las claves con Android Keystore.
-Se desactiva la copia de seguridad automática de Android para que el token
-cifrado no se restaure sin sus claves. El manifiesto declara `INTERNET` también
-para las compilaciones de distribución.
-
-Esta implementación está orientada a Android móvil. La API utiliza una cabecera
-`Authorization: Bearer <token>`; el cliente móvil la añade desde el servicio.
-No se confía en decodificar el JWT localmente ni en guardar el token como texto
-plano en preferencias. Las cookies de navegador son un mecanismo distinto del
-almacenamiento seguro del dispositivo que pide esta tarea.
+El token se envía como `Authorization: Bearer <token>`. La validez se consulta
+en la API: no basta con leer el token del dispositivo. Si es rechazado se borra;
+si falla la conexión se permanece en login sin destruir el token guardado.
 
 ## API del profesor
 
-- [Servicio desplegado](https://my-users-api.onrender.com)
-- [Código de la API](https://github.com/adhernea/my-users-api)
-- [Documentación de endpoints](https://github.com/adhernea/my-users-api/blob/main/docs/endpoints_api.md)
-- [Contrato local de las rutas utilizadas](docs/api_sesion.openapi.json)
+[Servicio](https://my-users-api.onrender.com) ·
+[Repositorio y documentación](https://github.com/adhernea/my-users-api)
 
-| Método | Ruta | Datos o autenticación |
+| Método | Endpoint | Datos |
 | --- | --- | --- |
-| POST | `/users/register` | JSON con `fullName`, `email`, `pwd` |
-| POST | `/users/login` | JSON con `email`, `pwd`; devuelve `token` |
-| GET | `/users/check-token` | Cabecera Bearer con el JWT |
-| GET | `/users/welcome` | Cabecera Bearer con el JWT |
+| POST | `/users/register` | `fullName`, `email`, `pwd` |
+| POST | `/users/login` | `email`, `pwd`; devuelve `token` |
+| GET | `/users/check-token` | Cabecera Bearer |
+| GET | `/users/welcome` | Cabecera Bearer |
 
-`ApiSesion` encapsula todas las peticiones HTTP y conserva los mensajes de la
-API. Contempla códigos de error como 400, 401, 404, 409 y 5xx, sin asumir que
-todos los fallos de login tienen el mismo código.
+Render puede tardar 50–60 segundos en despertar. Se utiliza un timeout de
+90 segundos y se desactivan los botones durante la petición. Los errores HTTP,
+de conexión o de formato de respuesta también se muestran en alertas.
+La persistencia de usuarios depende del servidor: SQLite puede perder sus datos
+si Render reinicia el contenedor con almacenamiento efímero.
 
-Render puede necesitar unos 50–60 segundos para despertar. Cada petición tiene
-un límite de 90 segundos y un indicador de espera. No se reintenta un registro
-automáticamente, porque un timeout no demuestra que el servidor no lo guardara.
-Si se pierde la respuesta, se puede intentar iniciar sesión con esa cuenta.
+## Capturas reales
 
-La disponibilidad y persistencia de usuarios dependen del servidor del profesor.
-Su SQLite puede perderse cuando Render reinicie o sustituya su contenedor; un
-usuario anterior podría tener que registrarse de nuevo. El código del servidor
-emite tokens con una duración de una hora.
-
-## Capturas reales de la aplicación funcionando
-
-Obtenidas en Android Pixel 9 ejecutando el flujo contra la API real de Render,
-con un usuario ficticio de demostración. La contraseña permanece oculta y no
-se muestran JWT en las capturas. Las respuestas de las alertas proceden de la API.
+Capturas de esta versión simplificada ejecutándose en Android Pixel 9, contra
+la API real del profesor, con una cuenta ficticia y la contraseña oculta.
 
 ### Registro exitoso
 
@@ -110,11 +81,11 @@ se muestran JWT en las capturas. Las respuestas de las alertas proceden de la AP
 
 ![Login exitoso](docs/capturas/tarea5_login_exitoso.png)
 
-### Mensaje del endpoint de bienvenida
+### Respuesta del endpoint de bienvenida
 
-![Mensaje de bienvenida de la API](docs/capturas/tarea5_bienvenida_api.png)
+![Mensaje de bienvenida](docs/capturas/tarea5_bienvenida_api.png)
 
-## Ejecutar
+## Ejecutar y comprobar
 
 ```bash
 git clone --branch P2-Tarea5-SesionUsuario https://github.com/joelsanchhhez/PGL-P2-MyPortfolio.git
@@ -123,91 +94,38 @@ flutter pub get
 flutter run
 ```
 
-El identificador Dart es `pgl_p2_myportfolio`. Los directorios Android y web ya
-forman parte del repositorio; no es necesario regenerarlos con `flutter create`.
-
-## Comprobaciones
-
 ```bash
 flutter analyze
 flutter test
 ```
 
-Verificado el **19 de noviembre de 2026**:
+Verificado el 19 de noviembre de 2026: `flutter analyze` sin incidencias y
+`flutter test` con 6 pruebas superadas.
 
-- `flutter analyze`: sin incidencias.
-- `flutter test`: 13 pruebas superadas, incluidas las del CRUD anterior.
-- Prueba de integración Android contra Render: flujo completo superado,
-  incluido guardado/lectura/borrado del token mediante el plugin nativo.
-- Servicio HTTP contra simulación local: registro/login/Bearer, token inválido,
-  503 y timeout superados.
+Se comprueban las validaciones, el modelo de respuesta, el login inicial sin
+Drawer, la protección de rutas y las funciones previas del portfolio y el CRUD.
+Además se ha verificado en el emulador el registro, ambos resultados de login,
+la bienvenida, la restauración del token, el cierre de sesión y el rechazo de
+un token inválido contra la API real.
 
-Las pruebas cubren serialización JSON, cabecera Bearer, validaciones, errores
-HTTP/HTML y timeout; guardado, restauración y eliminación del token; protección
-de rutas, alertas y flujo de sesión. Se mantienen las pruebas del Drawer,
-portfolio y CRUD de Instalaciones de la tarea anterior.
-
-También se incluye una prueba real de integración para Android que registra
-un usuario ficticio, comprueba ambos resultados de login, obtiene la bienvenida,
-recrea la app para comprobar la restauración y verifica el cierre de sesión.
-Genera las cuatro capturas anteriores mediante `integration_test`.
-
-Para repetirla, crea fuera del repositorio un archivo JSON de parámetros con
-una clave `DEMO_PASSWORD` y una contraseña de prueba que cumpla las reglas.
-No uses tu contraseña personal ni subas ese archivo a GitHub. Después:
-
-```bash
-flutter drive -d emulator-5554 \
-  --driver=test_driver/capturas.dart \
-  --target=integration_test/sesion_real_test.dart \
-  --dart-define-from-file=/ruta/externa/parametros-prueba.json
-```
-
-La prueba elimina el token de esta app en el emulador y crea una cuenta ficticia
-nueva en la API en cada ejecución. No se necesita una cuenta personal para probarla.
-
-Para comprobar respuestas HTTP controladas sin modificar la API real:
-
-```bash
-# Terminal 1: simulación local (requiere Postman CLI con simulation).
-postman simulation run postman/simulations/sesion.sim.yaml --port 4505 --no-history
-
-# Terminal 2: ejecuta el servicio real de la app contra esa simulación.
-dart run tool/probar_api_simulada.dart
-```
-
-La simulación verifica el cliente frente al contrato modelado y escenarios
-503/timeout; no demuestra firmas JWT ni persistencia de la API del profesor.
-La prueba Android usa el backend real y el almacenamiento seguro nativo.
-
-## Estructura
+## Archivos principales
 
 ```text
 lib/
-  main.dart                         # Inicializa controlador y router
-  app_router.dart                   # Guard de sesión y ShellRoute privado
-  tema.dart                         # Diseño de Cancha Canaria
+  main.dart                       # Arranque y tema
+  app_router.dart                 # Rutas, Drawer y cierre de sesión
   pantallas/
-    sesion.dart                     # Login y registro reutilizan el formulario
-    inicio.dart                     # Bienvenida y botón de la API
-    portfolio.dart                  # Pestañas del portfolio
-    instalaciones.dart              # CRUD de Tarea 3
-    ajustes.dart                    # Destino reservado
+    login.dart                    # Formulario y comprobación de sesión inicial
+    registro.dart                 # Formulario de registro
+    inicio.dart                   # Bienvenida y botón de la API
+    portfolio.dart                # Portfolio anterior
+    instalaciones.dart            # CRUD anterior
+    ajustes.dart                  # Destino reservado anterior
   servicios/
-    api_sesion.dart                 # HTTP, JSON, Bearer y errores
-    almacen_token.dart              # Almacenamiento seguro del JWT
-  sesion/
-    controlador_sesion.dart         # Restaurar, entrar y cerrar sesión
-  utilidades/
-    validaciones_sesion.dart        # Validaciones de los formularios
-  widgets/
-    alerta_sesion.dart              # AlertDialog reutilizado
-    menu_lateral.dart               # Drawer con cierre de sesión
-    ...                             # Widgets del portfolio y del CRUD
-integration_test/sesion_real_test.dart
-test_driver/capturas.dart
+    api_sesion.dart               # Peticiones HTTP y JSON
+    servicio_sesion.dart          # Singleton y almacenamiento seguro del JWT
+  modelos/respuesta_login.dart    # factory fromJson
+  excepciones/error_api.dart      # Error con mensaje y código HTTP
+  utilidades/validaciones_sesion.dart
+  widgets/alerta_sesion.dart       # Alerta reutilizada
 ```
-
-Los comentarios explican las funciones y decisiones importantes, sin comentar
-cada línea. Se conserva la paleta de la práctica 1: `#14345D`, `#9AD9F5`,
-`#F4F7FA` y `#172B42`, además de las imágenes y el portfolio anteriores.

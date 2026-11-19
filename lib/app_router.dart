@@ -5,66 +5,55 @@ import 'pantallas/ajustes.dart';
 import 'pantallas/inicio.dart';
 import 'pantallas/instalaciones.dart';
 import 'pantallas/portfolio.dart';
-import 'pantallas/sesion.dart';
-import 'servicios/api_sesion.dart';
-import 'sesion/controlador_sesion.dart';
+import 'pantallas/login.dart';
+import 'pantallas/registro.dart';
+import 'excepciones/error_api.dart';
+import 'servicios/servicio_sesion.dart';
 import 'widgets/alerta_sesion.dart';
 import 'widgets/menu_lateral.dart';
 
 /// Login y registro quedan fuera del ShellRoute. El guard impide entrar por URL o Atrás.
-abstract final class AppRouter {
-  static GoRouter crear(ControladorSesion sesion) => GoRouter(
-        initialLocation: '/login',
-        refreshListenable: sesion,
-        redirect: (context, state) {
-          final acceso =
-              state.uri.path == '/login' || state.uri.path == '/registro';
-          if (sesion.comprobando) {
-            return state.uri.path == '/login' ? null : '/login';
-          }
-          if (!sesion.autenticada) return acceso ? null : '/login';
-          return acceso ? '/' : null;
-        },
+class AppRouter {
+  static final GoRouter router = GoRouter(
+    initialLocation: '/login',
+    redirect: (context, state) {
+      final acceso =
+          state.uri.path == '/login' || state.uri.path == '/registro';
+      if (!ServicioSesion().autenticada && !acceso) return '/login';
+      return null;
+    },
+    routes: [
+      GoRoute(
+          path: '/login', builder: (context, state) => const PantallaLogin()),
+      GoRoute(
+          path: '/registro',
+          builder: (context, state) => const PantallaRegistro()),
+      ShellRoute(
+        builder: (context, state, child) =>
+            _EstructuraPrincipal(rutaActual: state.uri.path, child: child),
         routes: [
           GoRoute(
-              path: '/login',
-              builder: (context, state) =>
-                  PantallaSesion(key: const ValueKey('login'), sesion: sesion)),
+              path: '/',
+              builder: (context, state) => PantallaInicio(
+                  onVerInstalaciones: () => context.go('/instalaciones'))),
           GoRoute(
-              path: '/registro',
-              builder: (context, state) => PantallaSesion(
-                  key: const ValueKey('registro'),
-                  sesion: sesion,
-                  registro: true)),
-          ShellRoute(
-            builder: (context, state, child) => _EstructuraPrincipal(
-                rutaActual: state.uri.path, sesion: sesion, child: child),
-            routes: [
-              GoRoute(
-                  path: '/',
-                  builder: (context, state) => PantallaInicio(
-                      sesion: sesion,
-                      onVerInstalaciones: () => context.go('/instalaciones'))),
-              GoRoute(
-                  path: '/portfolio',
-                  builder: (context, state) => const PantallaPortfolio()),
-              GoRoute(
-                  path: '/instalaciones',
-                  builder: (context, state) => const PantallaInstalaciones()),
-              GoRoute(
-                  path: '/ajustes',
-                  builder: (context, state) => const PantallaAjustes()),
-            ],
-          ),
+              path: '/portfolio',
+              builder: (context, state) => const PantallaPortfolio()),
+          GoRoute(
+              path: '/instalaciones',
+              builder: (context, state) => const PantallaInstalaciones()),
+          GoRoute(
+              path: '/ajustes',
+              builder: (context, state) => const PantallaAjustes()),
         ],
-      );
+      ),
+    ],
+  );
 }
 
 class _EstructuraPrincipal extends StatefulWidget {
-  const _EstructuraPrincipal(
-      {required this.rutaActual, required this.sesion, required this.child});
+  const _EstructuraPrincipal({required this.rutaActual, required this.child});
   final String rutaActual;
-  final ControladorSesion sesion;
   final Widget child;
   @override
   State<_EstructuraPrincipal> createState() => _EstructuraPrincipalState();
@@ -77,8 +66,9 @@ class _EstructuraPrincipalState extends State<_EstructuraPrincipal> {
     if (_cerrando) return;
     setState(() => _cerrando = true);
     try {
-      await widget.sesion.cerrarSesion();
-    } on ErrorSesion catch (error) {
+      await ServicioSesion().cerrarSesion();
+      if (mounted) context.go('/login');
+    } on ErrorApi catch (error) {
       if (mounted) {
         await mostrarAlertaSesion(
             context, 'No se ha podido cerrar sesión', error.mensaje);
@@ -90,12 +80,20 @@ class _EstructuraPrincipalState extends State<_EstructuraPrincipal> {
 
   @override
   Widget build(BuildContext context) {
-    final titulo = switch (widget.rutaActual) {
-      '/portfolio' => 'Portfolio de Joel',
-      '/instalaciones' => 'Instalaciones',
-      '/ajustes' => 'Ajustes',
-      _ => 'Cancha Canaria',
-    };
+    String titulo;
+    switch (widget.rutaActual) {
+      case '/portfolio':
+        titulo = 'Portfolio de Joel';
+        break;
+      case '/instalaciones':
+        titulo = 'Instalaciones';
+        break;
+      case '/ajustes':
+        titulo = 'Ajustes';
+        break;
+      default:
+        titulo = 'Cancha Canaria';
+    }
     return Scaffold(
       appBar: AppBar(title: Text(titulo)),
       drawer: MenuLateral(

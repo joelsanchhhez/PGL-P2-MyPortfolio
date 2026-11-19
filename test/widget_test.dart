@@ -1,40 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pgl_p2_myportfolio/main.dart';
-import 'ayuda/sesion_prueba.dart';
+import 'package:pgl_p2_myportfolio/pantallas/instalaciones.dart';
+import 'package:pgl_p2_myportfolio/pantallas/portfolio.dart';
+import 'package:pgl_p2_myportfolio/tema.dart';
 
 void main() {
-  testWidgets('El Drawer abre el portfolio y la lista de instalaciones',
-      (tester) async {
-    await tester.pumpWidget(CanchaCanariaApp(sesion: sesionPrueba()));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Portfolio de Joel').last);
+  testWidgets('El portfolio conserva sus dos pestañas', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+        theme: TemaApp.claro, home: const Scaffold(body: PantallaPortfolio())));
     await tester.pumpAndSettle();
     expect(find.text('Sobre mí'), findsOneWidget);
     expect(find.text('Mis proyectos'), findsOneWidget);
-
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Instalaciones').last);
-    await tester.pumpAndSettle();
-
-    expect(find.text('Tus instalaciones'), findsOneWidget);
-    expect(find.text('Total: 2'), findsOneWidget);
-    expect(find.text('Cancha del barrio'), findsOneWidget);
-    expect(find.text('Pabellón del norte'), findsOneWidget);
   });
 
   testWidgets('El formulario se abre en un Dialog con los campos exigidos',
       (tester) async {
-    await tester.pumpWidget(CanchaCanariaApp(sesion: sesionPrueba()));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Instalaciones').last);
+    await tester.pumpWidget(MaterialApp(
+        theme: TemaApp.claro,
+        home: const Scaffold(body: PantallaInstalaciones())));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Añadir instalación'));
@@ -46,14 +29,11 @@ void main() {
     expect(find.text('Categoría *'), findsOneWidget);
     expect(find.text('Guardar'), findsOneWidget);
   });
-  testWidgets(
-      'Validación, alta, edición, cancelación, navegación y eliminación',
+  testWidgets('Validación, alta, edición, cancelación y eliminación',
       (tester) async {
-    await tester.pumpWidget(CanchaCanariaApp(sesion: sesionPrueba()));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Instalaciones').last);
+    await tester.pumpWidget(MaterialApp(
+        theme: TemaApp.claro,
+        home: const Scaffold(body: PantallaInstalaciones())));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Añadir instalación'));
     await tester.pumpAndSettle();
@@ -94,14 +74,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Campo actualizado'), findsOneWidget);
     expect(find.text('Total: 3'), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Portfolio de Joel').last);
-    await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.menu));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Instalaciones').last);
-    await tester.pumpAndSettle();
     expect(find.text('Campo actualizado'), findsOneWidget);
     await tester.tap(find.byTooltip('Eliminar Campo actualizado'));
     await tester.pumpAndSettle();

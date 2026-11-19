@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
 import '../tema.dart';
-import '../sesion/controlador_sesion.dart';
-import '../servicios/api_sesion.dart';
+import 'package:go_router/go_router.dart';
+import '../servicios/servicio_sesion.dart';
+import '../excepciones/error_api.dart';
 import '../widgets/alerta_sesion.dart';
 
 /// Bienvenida: mensaje sobre la cancha y enlace directo a instalaciones.
 class PantallaInicio extends StatefulWidget {
-  const PantallaInicio(
-      {super.key, required this.onVerInstalaciones, required this.sesion});
+  const PantallaInicio({super.key, required this.onVerInstalaciones});
 
   // El AppRouter recibe la acción y decide qué pantalla mostrar.
   final VoidCallback onVerInstalaciones;
-  final ControladorSesion sesion;
 
   @override
   State<PantallaInicio> createState() => _PantallaInicioState();
@@ -26,18 +25,20 @@ class _PantallaInicioState extends State<PantallaInicio> {
     if (_consultando) return;
     setState(() => _consultando = true);
     try {
-      final mensaje = await widget.sesion.bienvenida();
+      final mensaje = await ServicioSesion().bienvenida();
       if (mounted) {
         await mostrarAlertaSesion(context, 'Bienvenida de la API', mensaje);
       }
-    } on ErrorSesion catch (error) {
+    } on ErrorApi catch (error) {
       if (!mounted) return;
       await mostrarAlertaSesion(
           context, 'No se ha podido obtener la bienvenida', error.mensaje);
-      if (mounted && (error.tokenRechazado || error.codigo == 404)) {
+      if (mounted &&
+          (error.codigo == 401 || error.codigo == 403 || error.codigo == 404)) {
         try {
-          await widget.sesion.cerrarSesion();
-        } on ErrorSesion catch (errorGuardado) {
+          await ServicioSesion().cerrarSesion();
+          if (mounted) context.go('/login');
+        } on ErrorApi catch (errorGuardado) {
           if (mounted) {
             await mostrarAlertaSesion(context, 'No se ha podido cerrar sesión',
                 errorGuardado.mensaje);
@@ -66,10 +67,10 @@ class _PantallaInicioState extends State<PantallaInicio> {
               color: ColoresApp.primario,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Tu próxima cancha, en Canarias.',
                   style: TextStyle(
                     fontSize: 24,
@@ -78,13 +79,10 @@ class _PantallaInicioState extends State<PantallaInicio> {
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 14),
-                Text(
-                    widget.sesion.nombre == null
-                        ? '¡Bienvenido!'
-                        : '¡Bienvenido, ${widget.sesion.nombre}!',
-                    style: const TextStyle(
-                        fontSize: 16, color: ColoresApp.secundario)),
+                SizedBox(height: 14),
+                Text('¡Bienvenido!',
+                    style:
+                        TextStyle(fontSize: 16, color: ColoresApp.secundario)),
               ],
             ),
           ),
