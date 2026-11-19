@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pgl_p2_myportfolio/main.dart';
+import 'ayuda/sesion_prueba.dart';
 
 void main() {
   testWidgets('El Drawer abre el portfolio y la lista de instalaciones',
       (tester) async {
-    await tester.pumpWidget(const CanchaCanariaApp());
+    await tester.pumpWidget(CanchaCanariaApp(sesion: sesionPrueba()));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.menu));
@@ -28,7 +29,7 @@ void main() {
 
   testWidgets('El formulario se abre en un Dialog con los campos exigidos',
       (tester) async {
-    await tester.pumpWidget(const CanchaCanariaApp());
+    await tester.pumpWidget(CanchaCanariaApp(sesion: sesionPrueba()));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.menu));
@@ -48,7 +49,7 @@ void main() {
   testWidgets(
       'Validación, alta, edición, cancelación, navegación y eliminación',
       (tester) async {
-    await tester.pumpWidget(const CanchaCanariaApp());
+    await tester.pumpWidget(CanchaCanariaApp(sesion: sesionPrueba()));
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();

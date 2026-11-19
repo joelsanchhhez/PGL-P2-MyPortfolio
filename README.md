@@ -1,159 +1,213 @@
-# Cancha Canaria — PGL-P2-MyPortfolio
+# Cancha Canaria — P2 · Tarea 5: Sesión de usuario
 
-**UD2 / Práctica 2 · Tarea 3: Formulario de instalaciones**
+Joel Sánchez Siliuto · 2.º DAM · Programación Multimedia y Dispositivos Móviles.
 
-Joel Sánchez Siliuto · 2.º DAM · Salesianos La Cuesta
+Aplicación Flutter de instalaciones deportivas de Canarias. Esta tarea añade
+registro, inicio de sesión y gestión de un JWT sobre la Tarea 3, conservando
+la bienvenida, el portfolio, el Drawer, las rutas con `go_router` y el CRUD de
+instalaciones, incluido «Borrar todos».
 
-## Qué hace la aplicación
+**[Rama de entrega: P2-Tarea5-SesionUsuario](https://github.com/joelsanchhhez/PGL-P2-MyPortfolio/tree/P2-Tarea5-SesionUsuario)**
 
-Cancha Canaria muestra una bienvenida y permite acceder desde un Drawer al
-portfolio de Joel, a Instalaciones y a Ajustes. El portfolio tiene las pestañas
-Sobre mí y Mis proyectos, con fotografía, actividades y QR del perfil de GitHub.
-Instalaciones permite crear, editar y eliminar registros; Ajustes queda reservado.
+## Registro e inicio de sesión
 
-## Navegación con go_router
+- Registro con nombre completo, email y contraseña.
+- Validación de nombre (3 a 100 caracteres), formato de email y contraseña de
+  registro (8 a 64 caracteres, mayúscula, minúscula, número y símbolo).
+- En login se valida email y contraseña no vacía, sin imponer reglas nuevas
+  que pudieran impedir acceder a cuentas anteriores.
+- Contraseña oculta, con un botón accesible para mostrarla.
+- Toda respuesta de registro o login se muestra en un `AlertDialog`, tanto
+  si la API acepta la petición como si devuelve un error.
+- Un registro correcto vuelve a login al aceptar la alerta.
+- Un login correcto guarda primero el JWT y muestra la respuesta; al aceptar
+  la alerta se abre Bienvenida.
+- Los botones se bloquean mientras hay una petición para evitar envíos dobles.
+- Los errores de conexión, timeout o respuestas no válidas también se explican
+  en alertas, sin mostrar HTML del servidor ni datos técnicos sensibles.
 
-`MaterialApp.router` y `ShellRoute` comparten el AppBar y el Drawer.
-Se mantienen los destinos y callbacks de la versión actual, la selección activa
-y el cierre del menú. A petición de esta tarea se recupera `go_router`, ya que
-la última entrega había cambiado a `Navigator` con rutas nombradas.
+## Sesión y navegación protegida
 
-| Ruta | Pantalla |
-| --- | --- |
-| `/` | Bienvenida |
-| `/portfolio` | Portfolio con dos pestañas |
-| `/instalaciones` | Lista dinámica y formulario |
-| `/ajustes` | Aviso de próxima tarea |
+Al arrancar solo se construye el login, fuera del `ShellRoute`: no aparece
+el Drawer ni se puede acceder al portfolio o a Instalaciones.
 
-## Tarea 3: gestión de instalaciones
+1. Se busca el token con `flutter_secure_storage`.
+2. Si no existe, se permanece en login.
+3. Si existe, se consulta `GET /users/check-token`.
+4. Si la API lo acepta, se abre automáticamente Bienvenida.
+5. Si lo rechaza (401/403), se elimina del dispositivo y se permanece en login.
+6. Si hay un problema de red o del servidor, no se permite entrar y se conserva
+   el token guardado para poder usar «Reintentar sesión guardada».
 
-- Lista dinámica con `ListView.builder`, `StatefulWidget` y `setState`.
-- Alta en formulario modal con nombre, descripción de hasta 120 caracteres y
-  categoría obligatorios. Los espacios vacíos no son válidos.
-- Isla y municipio opcionales.
-- Categorías Cancha, Pabellón y Campo de fútbol, con imágenes locales distintas.
-- Edición en el mismo formulario con todos los datos precargados.
-- Eliminación individual con confirmación y posibilidad de cancelar.
-- Contador actualizado al crear o eliminar y mensaje para la lista vacía.
+El guard de `go_router` protege también los accesos por ruta y el regreso a
+pantallas privadas después de cerrar sesión.
 
-Los dos registros iniciales son ejemplos. Los datos se conservan al cambiar
-entre destinos durante la sesión y se reinician al cerrar la aplicación;
-no se utiliza base de datos. «Borrar todos» permite vaciar la lista con un
-diálogo de confirmación; se desactiva cuando no hay instalaciones.
+El Drawer contiene **Cerrar sesión**: elimina el JWT del almacenamiento seguro,
+limpia la sesión en memoria y vuelve a login. Si el borrado falla, muestra una
+alerta para poder reintentarlo.
 
-La integración parte del commit `2b7bd42` del repositorio actual y añade solo
-el modelo, el formulario, las tarjetas y las imágenes de categorías del ZIP.
-Conserva la fotografía, la imagen de cancha, el tema, las actividades, el QR,
-el enlace a GitHub y las pestañas del portfolio de la entrega más reciente.
+Bienvenida incluye **Mensaje de bienvenida**, que consulta el endpoint protegido
+`GET /users/welcome` y muestra su `message` en una alerta. Si la API rechaza el
+token o ya no encuentra al usuario, se cierra la sesión tras aceptar el aviso.
 
-## Portfolio y diseño
+## Almacenamiento seguro
 
-Las pestañas usan `DefaultTabController`, `TabBar` y `TabBarView`. Son widgets
-estándar para implementar las dos secciones del diseño, aunque su implementación
-no se desarrolla en los apuntes aportados. Las tarjetas, la presentación y los
-proyectos se separan en widgets pequeños y comentados.
+Se guarda únicamente el JWT con `flutter_secure_storage`; nunca la contraseña.
+En Android, el plugin cifra los datos y protege las claves con Android Keystore.
+Se desactiva la copia de seguridad automática de Android para que el token
+cifrado no se restaure sin sus claves. El manifiesto declara `INTERNET` también
+para las compilaciones de distribución.
 
-Se conservan los colores: primario `#14345D`, secundario `#9AD9F5`, fondo
-`#F4F7FA` y texto `#172B42`. La fotografía está en `assets/images/joel.jpg`.
-La cancha del código inicial se ha exportado como `assets/images/cancha.png`:
-la bienvenida utiliza `Image.asset`, sin código para dibujar con un lienzo.
+Esta implementación está orientada a Android móvil. La API utiliza una cabecera
+`Authorization: Bearer <token>`; el cliente móvil la añade desde el servicio.
+No se confía en decodificar el JWT localmente ni en guardar el token como texto
+plano en preferencias. Las cookies de navegador son un mecanismo distinto del
+almacenamiento seguro del dispositivo que pide esta tarea.
 
-`qr_flutter` y `url_launcher` conservan el QR y el enlace del portfolio inicial.
+## API del profesor
 
-## Ejecutar y compilar
+- [Servicio desplegado](https://my-users-api.onrender.com)
+- [Código de la API](https://github.com/adhernea/my-users-api)
+- [Documentación de endpoints](https://github.com/adhernea/my-users-api/blob/main/docs/endpoints_api.md)
+- [Contrato local de las rutas utilizadas](docs/api_sesion.openapi.json)
+
+| Método | Ruta | Datos o autenticación |
+| --- | --- | --- |
+| POST | `/users/register` | JSON con `fullName`, `email`, `pwd` |
+| POST | `/users/login` | JSON con `email`, `pwd`; devuelve `token` |
+| GET | `/users/check-token` | Cabecera Bearer con el JWT |
+| GET | `/users/welcome` | Cabecera Bearer con el JWT |
+
+`ApiSesion` encapsula todas las peticiones HTTP y conserva los mensajes de la
+API. Contempla códigos de error como 400, 401, 404, 409 y 5xx, sin asumir que
+todos los fallos de login tienen el mismo código.
+
+Render puede necesitar unos 50–60 segundos para despertar. Cada petición tiene
+un límite de 90 segundos y un indicador de espera. No se reintenta un registro
+automáticamente, porque un timeout no demuestra que el servidor no lo guardara.
+Si se pierde la respuesta, se puede intentar iniciar sesión con esa cuenta.
+
+La disponibilidad y persistencia de usuarios dependen del servidor del profesor.
+Su SQLite puede perderse cuando Render reinicie o sustituya su contenedor; un
+usuario anterior podría tener que registrarse de nuevo. El código del servidor
+emite tokens con una duración de una hora.
+
+## Capturas reales de la aplicación funcionando
+
+Obtenidas en Android Pixel 9 ejecutando el flujo contra la API real de Render,
+con un usuario ficticio de demostración. La contraseña permanece oculta y no
+se muestran JWT en las capturas. Las respuestas de las alertas proceden de la API.
+
+### Registro exitoso
+
+![Registro exitoso](docs/capturas/tarea5_registro_exitoso.png)
+
+### Login fallido
+
+![Login fallido](docs/capturas/tarea5_login_fallido.png)
+
+### Login exitoso
+
+![Login exitoso](docs/capturas/tarea5_login_exitoso.png)
+
+### Mensaje del endpoint de bienvenida
+
+![Mensaje de bienvenida de la API](docs/capturas/tarea5_bienvenida_api.png)
+
+## Ejecutar
 
 ```bash
+git clone --branch P2-Tarea5-SesionUsuario https://github.com/joelsanchhhez/PGL-P2-MyPortfolio.git
+cd PGL-P2-MyPortfolio
 flutter pub get
 flutter run
 ```
 
-Para ejecutar en navegador:
+El identificador Dart es `pgl_p2_myportfolio`. Los directorios Android y web ya
+forman parte del repositorio; no es necesario regenerarlos con `flutter create`.
 
-```bash
-flutter run -d chrome
-```
-
-Para analizar y compilar:
+## Comprobaciones
 
 ```bash
 flutter analyze
 flutter test
-flutter build apk --debug
-flutter build web
 ```
 
-El APK se genera en `build/app/outputs/flutter-apk/app-debug.apk`.
-El identificador Dart es `pgl_p2_myportfolio`, porque el nombre del paquete
-no admite mayúsculas ni guiones.
+Verificado el **19 de noviembre de 2026**:
+
+- `flutter analyze`: sin incidencias.
+- `flutter test`: 13 pruebas superadas, incluidas las del CRUD anterior.
+- Prueba de integración Android contra Render: flujo completo superado,
+  incluido guardado/lectura/borrado del token mediante el plugin nativo.
+- Servicio HTTP contra simulación local: registro/login/Bearer, token inválido,
+  503 y timeout superados.
+
+Las pruebas cubren serialización JSON, cabecera Bearer, validaciones, errores
+HTTP/HTML y timeout; guardado, restauración y eliminación del token; protección
+de rutas, alertas y flujo de sesión. Se mantienen las pruebas del Drawer,
+portfolio y CRUD de Instalaciones de la tarea anterior.
+
+También se incluye una prueba real de integración para Android que registra
+un usuario ficticio, comprueba ambos resultados de login, obtiene la bienvenida,
+recrea la app para comprobar la restauración y verifica el cierre de sesión.
+Genera las cuatro capturas anteriores mediante `integration_test`.
+
+Para repetirla, crea fuera del repositorio un archivo JSON de parámetros con
+una clave `DEMO_PASSWORD` y una contraseña de prueba que cumpla las reglas.
+No uses tu contraseña personal ni subas ese archivo a GitHub. Después:
+
+```bash
+flutter drive -d emulator-5554 \
+  --driver=test_driver/capturas.dart \
+  --target=integration_test/sesion_real_test.dart \
+  --dart-define-from-file=/ruta/externa/parametros-prueba.json
+```
+
+La prueba elimina el token de esta app en el emulador y crea una cuenta ficticia
+nueva en la API en cada ejecución. No se necesita una cuenta personal para probarla.
+
+Para comprobar respuestas HTTP controladas sin modificar la API real:
+
+```bash
+# Terminal 1: simulación local (requiere Postman CLI con simulation).
+postman simulation run postman/simulations/sesion.sim.yaml --port 4505 --no-history
+
+# Terminal 2: ejecuta el servicio real de la app contra esa simulación.
+dart run tool/probar_api_simulada.dart
+```
+
+La simulación verifica el cliente frente al contrato modelado y escenarios
+503/timeout; no demuestra firmas JWT ni persistencia de la API del profesor.
+La prueba Android usa el backend real y el almacenamiento seguro nativo.
 
 ## Estructura
 
 ```text
 lib/
-  main.dart                  # MaterialApp.router, tema y AppRouter
-  app_router.dart            # ShellRoute, Scaffold común y go_router
-  tema.dart                  # Colores y tema
+  main.dart                         # Inicializa controlador y router
+  app_router.dart                   # Guard de sesión y ShellRoute privado
+  tema.dart                         # Diseño de Cancha Canaria
   pantallas/
-    inicio.dart              # Imagen y bienvenida
-    portfolio.dart           # Sobre mí y Mis proyectos
-    instalaciones.dart       # Lista dinámica y CRUD
-    ajustes.dart             # Reservada para otra tarea
+    sesion.dart                     # Login y registro reutilizan el formulario
+    inicio.dart                     # Bienvenida y botón de la API
+    portfolio.dart                  # Pestañas del portfolio
+    instalaciones.dart              # CRUD de Tarea 3
+    ajustes.dart                    # Destino reservado
+  servicios/
+    api_sesion.dart                 # HTTP, JSON, Bearer y errores
+    almacen_token.dart              # Almacenamiento seguro del JWT
+  sesion/
+    controlador_sesion.dart         # Restaurar, entrar y cerrar sesión
+  utilidades/
+    validaciones_sesion.dart        # Validaciones de los formularios
   widgets/
-    menu_lateral.dart        # Opciones del Drawer y callback
-    presentacion.dart        # Fotografía y presentación
-    actividades.dart         # Tarjetas de actividades
-    proyectos.dart           # QR y enlace a GitHub
-assets/images/
-  joel.jpg
-  cancha.png
+    alerta_sesion.dart              # AlertDialog reutilizado
+    menu_lateral.dart               # Drawer con cierre de sesión
+    ...                             # Widgets del portfolio y del CRUD
+integration_test/sesion_real_test.dart
+test_driver/capturas.dart
 ```
 
-## Comprobación manual
-
-- Abrir el Drawer y comprobar las cuatro opciones y la selección activa.
-- Entrar en cada destino y comprobar el título y el cierre del menú.
-- Pulsar otra vez el destino activo y comprobar que el Drawer se cierra.
-- Volver a Inicio y pulsar Ver instalaciones.
-- Abrir el portfolio y alternar Sobre mí y Mis proyectos, también deslizando.
-- Comprobar la fotografía, las actividades, el QR y el enlace de GitHub.
-
-Las pruebas de widgets cubren navegación, apertura del formulario, validación,
-alta con categoría e imagen, edición precargada, conservación al navegar,
-cancelación y confirmación de eliminación, lista vacía y cancelación de alta.
-
-Verificado en esta entrega: `flutter analyze` sin incidencias y
-`flutter test` con las tres pruebas superadas. La app se ha compilado y
-ejecutado en Android Pixel 9.
-
-## Capturas reales
-
-Capturas reales de esta versión ejecutada en el emulador Android Pixel 9
-(540 × 1212, densidad 210). Se conservan las capturas del portfolio de la
-entrega anterior, cuyo código y recursos no cambian.
-
-![Bienvenida](docs/capturas/inicio.png)
-![Drawer](docs/capturas/drawer.png)
-![Sobre mí](docs/capturas/portfolio_sobre_mi.png)
-![Mis proyectos](docs/capturas/portfolio_proyectos.png)
-![Instalaciones y contador](docs/capturas/instalaciones_lista.png)
-![Formulario modal](docs/capturas/instalaciones_formulario.png)
-![Validación](docs/capturas/instalaciones_validacion.png)
-![Edición precargada](docs/capturas/instalaciones_editar.png)
-![Confirmación de eliminación](docs/capturas/instalaciones_eliminar.png)
-
-## Repositorio y entrega
-
-[Repositorio público](https://github.com/joelsanchhhez/PGL-P2-MyPortfolio)
-
-[Rama de entrega P2-Tarea3-Formulario](https://github.com/joelsanchhhez/PGL-P2-MyPortfolio/tree/P2-Tarea3-Formulario)
-
-La rama parte de `P2-Tarea1-Navegación` e incluye el formulario, el CRUD,
-el borrado de todas las instalaciones y las capturas reales enlazadas arriba.
-
-```bash
-git switch P2-Tarea3-Formulario
-flutter pub get
-flutter analyze
-flutter test
-flutter run
-```
+Los comentarios explican las funciones y decisiones importantes, sin comentar
+cada línea. Se conserva la paleta de la práctica 1: `#14345D`, `#9AD9F5`,
+`#F4F7FA` y `#172B42`, además de las imágenes y el portfolio anteriores.

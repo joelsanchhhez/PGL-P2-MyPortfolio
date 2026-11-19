@@ -1,12 +1,17 @@
 # Capturas reales
 
-Capturas obtenidas con `adb exec-out screencap -p` en Pixel 9.
-Resolución: 540 × 1212; densidad: 210.
+Las cuatro imágenes `tarea5_*.png` corresponden a la Tarea 5, obtenidas el
+19 de noviembre de 2026 con `integration_test` en Android Pixel 9 (540 × 1212).
+Se ejecutó el código real de la app contra `https://my-users-api.onrender.com`;
+las alertas contienen respuestas del servidor. La prueba controla solo la
+entrada de texto para evitar interferencias del teclado Android.
 
-Las capturas de inicio, Drawer e instalaciones corresponden a Tarea 3.
-Se conservan las dos capturas del portfolio de la entrega anterior porque
-su implementación y recursos no se han modificado.
+- `tarea5_registro_exitoso.png`: registro aceptado.
+- `tarea5_login_fallido.png`: contraseña incorrecta rechazada.
+- `tarea5_login_exitoso.png`: autenticación correcta y token guardado.
+- `tarea5_bienvenida_api.png`: respuesta del endpoint protegido de bienvenida.
 
-Las pruebas de widgets verifican además el alta, el cambio de categoría e
-imagen, la edición, la cancelación de borrado, la eliminación, la lista vacía
-y la conservación de los registros al navegar.
+Se usa una identidad ficticia de ejemplo y la contraseña está oculta. No hay
+tokens ni credenciales reales en las capturas ni en el repositorio.
+
+Las demás imágenes son capturas históricas de las tareas 1 y 3.

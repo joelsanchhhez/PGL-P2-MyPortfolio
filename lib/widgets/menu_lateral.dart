@@ -8,8 +8,10 @@ class MenuLateral extends StatelessWidget {
     super.key,
     required this.rutaActual,
     required this.onSeleccionar,
+    this.onCerrarSesion,
   });
 
+  final VoidCallback? onCerrarSesion;
   final String rutaActual;
   final void Function(String) onSeleccionar;
 
@@ -26,6 +28,18 @@ class MenuLateral extends StatelessWidget {
           _entrada(
               context, Icons.sports_soccer, 'Instalaciones', '/instalaciones'),
           _entrada(context, Icons.settings, 'Ajustes', '/ajustes'),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout, color: ColoresApp.error),
+            title: const Text('Cerrar sesión'),
+            enabled: onCerrarSesion != null,
+            onTap: onCerrarSesion == null
+                ? null
+                : () {
+                    Navigator.pop(context);
+                    onCerrarSesion!();
+                  },
+          ),
         ],
       ),
     );

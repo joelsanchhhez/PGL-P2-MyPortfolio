@@ -1,0 +1,37 @@
+purpose:
+  stands_in_for: API de usuarios del profesor, solo las cuatro rutas usadas por Cancha Canaria.
+  unblocks: Pruebas del cliente HTTP con registro/login/Bearer y fallos controlados sin cuentas reales.
+assumptions:
+  - id: contrato-de-las-cuatro-rutas
+    status: supported
+    claim: El cliente envía fullName/email/pwd al registro, email/pwd al login y Bearer a check-token/welcome.
+    reason: Las rutas y controladores del profesor y su documentación describen ese intercambio; la simulación ha recibido las peticiones del servicio Dart.
+    verification: El 2026-11-19 se leyó el código 9f2dc04 del profesor y se ejecutó tool/probar_api_simulada.dart contra Postman en localhost, con registro/login y bienvenida correctos.
+    source: https://github.com/adhernea/my-users-api/tree/9f2dc04; docs/api_sesion.openapi.json; tool/probar_api_simulada.dart
+    updated_at: "2026-11-19"
+  - id: manejo-de-fallos-http
+    status: supported
+    claim: El cliente no acepta tokens rechazados y convierte 503 y timeout en ErrorSesion comprensible.
+    reason: Se han ejercitado HTTP real local y condiciones controladas usando ApiSesion, sin sustituir su cliente HTTP.
+    verification: tool/probar_api_simulada.dart terminó con PASS al recibir 401, 503 y timeout; esto prueba la reacción del cliente frente al modelo, no la disponibilidad de Render.
+    source: postman/simulations/sesion.sim.yaml; lib/servicios/api_sesion.dart; tool/probar_api_simulada.dart
+    updated_at: "2026-11-19"
+  - id: persistencia-del-servidor
+    status: unknown
+    claim: Los registros se conservan tras suspensión o reinicio de Render.
+    reason: No hay garantía de persistencia para SQLite en un sistema de archivos efímero y la simulación no modela el ciclo de vida de Render.
+    verification: No se han provocado reinicios de la API. La app contempla que un usuario desaparezca y no confunde un token válido con una cuenta existente.
+    source: Enunciado de Tarea 5; https://github.com/adhernea/my-users-api
+    updated_at: "2026-11-19"
+  - id: flujo-real-en-android
+    status: supported
+    claim: Registro, ambos resultados de login, bienvenida, restauración y cierre de sesión funcionan con Render y el almacenamiento seguro nativo en Pixel 9.
+    reason: La integración Android completó el flujo con respuestas reales y comprobó la persistencia del JWT entre dos instancias de la aplicación y su eliminación al cerrar sesión.
+    verification: El 2026-11-19 flutter drive terminó con All tests passed y generó las cuatro capturas tarea5. El test controla la entrada de texto; las peticiones y el almacenamiento no están simulados. No prueba la persistencia de SQLite tras un reinicio de Render.
+    source: integration_test/sesion_real_test.dart; docs/capturas/tarea5_registro_exitoso.png; docs/capturas/tarea5_login_fallido.png; docs/capturas/tarea5_login_exitoso.png; docs/capturas/tarea5_bienvenida_api.png
+    updated_at: "2026-11-19"
+fingerprints:
+  - id: api-profesor
+    date: "2026-11-19"
+    commit: 9f2dc04
+    cli: Postman CLI 1.77.0

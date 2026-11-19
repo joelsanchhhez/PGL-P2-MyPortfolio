@@ -1,5 +1,5 @@
 name: pgl_p2_myportfolio
-description: "Cancha Canaria - P2 Tarea 3: Formulario de instalaciones"
+description: "Cancha Canaria - P2 Tarea 5: Sesión de usuario con JWT"
 publish_to: none
 version: 1.0.0+1
 
@@ -9,7 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_secure_storage: ^11.2.0
   go_router: ^16.0.0
+  http: ^1.6.0
   qr_flutter: ^4.1.0
   url_launcher: '>=6.3.0 <7.0.0'
 
@@ -17,6 +19,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  integration_test:
+    sdk: flutter
 
 flutter:
   uses-material-design: true
